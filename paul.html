@@ -1,142 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paul — Kieran Progress Dashboard</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedule and marking — Doyle hearing prep</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f4f0;min-height:100vh;padding:16px}
-.card{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-h1{font-size:20px;font-weight:600;color:#1a1a1a}
-.sub{font-size:13px;color:#888;margin-top:3px;margin-bottom:16px}
-.stat-row{display:flex;gap:12px;margin-bottom:16px}
-.stat{flex:1;background:#f9f9f7;border-radius:12px;padding:14px;text-align:center}
-.stat-num{font-size:28px;font-weight:700;color:#1a56db}
-.stat-label{font-size:11px;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
-.progress-wrap{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px}
-.pip{width:10px;height:10px;border-radius:50%;background:#e0e0e0}
-.pip.done-strong{background:#22c55e}
-.pip.done-weak{background:#f59e0b}
-.pip.active{background:#1a56db}
-.result-item{border:1px solid #f0f0ec;border-radius:12px;padding:14px;margin-bottom:10px}
-.result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.result-day{font-size:13px;font-weight:600;color:#1a1a1a}
-.result-time{font-size:11px;color:#aaa}
-.result-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px}
-.strong{background:#dcfce7;color:#166534}
-.weak{background:#fef9c3;color:#854d0e}
-.result-q{font-size:13px;color:#666;margin-bottom:6px;font-style:italic}
-.result-a{font-size:13px;color:#333;margin-bottom:6px;line-height:1.5}
-.result-assessment{font-size:13px;color:#444;background:#f9f9f7;padding:10px;border-radius:8px;line-height:1.5}
-.empty{text-align:center;padding:40px 20px;color:#aaa;font-size:14px}
-.refresh-btn{display:block;width:100%;padding:12px;background:#f0f0ec;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;color:#444;margin-bottom:12px}
-.refresh-btn:hover{background:#e4e4e0}
-.kieran-link{text-align:center;margin-top:8px}
-.kieran-link a{font-size:13px;color:#1a56db;text-decoration:none}
-.section-title{font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
-.no-results{color:#aaa;font-size:14px;text-align:center;padding:20px}
-details{margin-bottom:10px}
-summary{font-size:14px;font-weight:500;color:#1a1a1a;cursor:pointer;padding:10px 14px;background:#f9f9f7;border-radius:10px;list-style:none;display:flex;justify-content:space-between;align-items:center}
-summary::-webkit-details-marker{display:none}
-.summary-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px}
-details[open] summary{border-radius:10px 10px 0 0;background:#f0f0ec}
-.detail-body{padding:12px 14px;background:#f9f9f7;border-radius:0 0 10px 10px;border-top:1px solid #e8e8e4}
+  :root{
+    --ground:#E8EBE4; --panel:#FCFCFA; --ink:#17201C; --muted:#5C6862;
+    --accent:#6B2D2D; --rule:#CFD6C9; --done:#4A6B52; --work:#8A6A1F;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--ground); color:var(--ink);
+    font:400 16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:28px 20px 80px}
+  .wrap{max-width:840px; margin:0 auto}
+  h1{font:600 19px/1.2 system-ui,sans-serif; margin:0 0 4px}
+  .sub{color:var(--muted); font-size:13.5px; margin:0 0 6px}
+  .tally{color:var(--muted); font-size:13.5px; margin:14px 0 24px}
+  .weekhead{font:600 14px system-ui,sans-serif; color:var(--accent);
+    margin:30px 0 10px; padding-bottom:6px; border-bottom:1px solid var(--rule)}
+  details{background:var(--panel); border:1px solid var(--rule); border-left-width:3px;
+    border-radius:3px; margin-bottom:8px; padding:0}
+  details[data-s="done"]{border-left-color:var(--done)}
+  details[data-s="work"]{border-left-color:var(--work)}
+  summary{cursor:pointer; padding:13px 16px; list-style:none; display:flex; gap:12px; align-items:baseline}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+  .dnum{color:var(--muted); font-size:13px; min-width:78px; flex:none}
+  .dq{font:400 16px/1.45 Charter,"Bitstream Charter",Georgia,serif}
+  .body{padding:0 16px 16px 106px}
+  .body ul{margin:0 0 14px; padding-left:20px}
+  .body li{margin-bottom:6px; font-size:15px}
+  .focus{color:var(--muted); font-size:14px; margin:0 0 14px}
+  .marks{display:flex; gap:8px; flex-wrap:wrap}
+  .marks button{font:500 14px system-ui,sans-serif; padding:7px 13px; border-radius:3px;
+    border:1px solid var(--rule); background:#fff; color:var(--ink); cursor:pointer}
+  .marks button[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .foot{margin-top:34px; font-size:13px; color:var(--muted)}
+  .foot a{color:var(--accent)}
+  @media (max-width:560px){
+    .body{padding-left:16px}
+    summary{flex-direction:column; gap:4px}
+  }
+  @media print{ body{background:#fff} details{break-inside:avoid} .marks{display:none} }
 </style>
 </head>
 <body>
-
-<div class="card">
-  <h1>📊 Paul — Kieran's Progress</h1>
-  <p class="sub">Tanager v Doyle 2020/45CA · Hearing: 13 October 2026</p>
-  <div class="stat-row">
-    <div class="stat"><div class="stat-num" id="days-done">0</div><div class="stat-label">Days done</div></div>
-    <div class="stat"><div class="stat-num" id="strong-count">0</div><div class="stat-label">Strong ✅</div></div>
-    <div class="stat"><div class="stat-num" id="weak-count">0</div><div class="stat-label">Needs work ⚠️</div></div>
-  </div>
-  <div class="progress-wrap" id="progress"></div>
-  <div class="kieran-link"><a href="index.html">← Kieran's quiz</a></div>
+<div class="wrap">
+  <h1>Schedule and marking</h1>
+  <p class="sub">Tanager and Pepper v Doyle, 2020/45CA. All 42 days, with the points each answer should hit.</p>
+  <p class="tally" id="tally"></p>
+  <div id="list"></div>
+  <p class="foot">Kieran's answers arrive by email, not through this page. Marking here is stored on this device only, as your own record of where he is. His page is at <a href="index.html">index.html</a>.</p>
 </div>
 
-<button class="refresh-btn" onclick="load()">↻ Refresh results</button>
-
-<div class="card">
-  <div class="section-title" id="results-title">Recent results</div>
-  <div id="results-list"></div>
-</div>
-
+<script src="questions.js"></script>
 <script>
-const PAUL_KEY='paul_results';
-const SCHEDULE_DAYS=42;
+(function(){
+  const key = d => "kd:mark:" + d;
+  const getMark = d => { try { return localStorage.getItem(key(d)) || ""; } catch(e){ return ""; } };
+  const setMark = (d,v) => { try { v ? localStorage.setItem(key(d),v) : localStorage.removeItem(key(d)); } catch(e){} };
+  const dayMs = 86400000;
+  const dateFor = d => new Date(new Date(START_DATE+"T00:00:00").getTime()+(d-1)*dayMs)
+    .toLocaleDateString("en-IE",{day:"numeric", month:"short"});
 
-function getResults(){
-  try{return JSON.parse(localStorage.getItem(PAUL_KEY))||[];}catch(e){return[];}
-}
-
-function getState(){
-  try{return JSON.parse(localStorage.getItem('kieran_v2'))||{day:1,results:[]};}catch(e){return{day:1};}
-}
-
-function fmt(iso){
-  try{
-    const d=new Date(iso);
-    return d.toLocaleDateString('en-IE',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('en-IE',{hour:'2-digit',minute:'2-digit'});
-  }catch(e){return '';}
-}
-
-function load(){
-  const results=getResults();
-  const state=getState();
-  const currentDay=state.day||1;
-
-  document.getElementById('days-done').textContent=results.length;
-  document.getElementById('strong-count').textContent=results.filter(r=>r.strong).length;
-  document.getElementById('weak-count').textContent=results.filter(r=>!r.strong).length;
-
-  const prog=document.getElementById('progress');
-  prog.innerHTML='';
-  for(let i=1;i<=SCHEDULE_DAYS;i++){
-    const pip=document.createElement('div');
-    pip.className='pip';
-    const res=results.find(r=>r.day===i);
-    if(res){pip.classList.add(res.strong?'done-strong':'done-weak');}
-    else if(i===currentDay){pip.classList.add('active');}
-    pip.title=`Day ${i}`;
-    prog.appendChild(pip);
+  function tally(){
+    let done=0, work=0;
+    QUESTIONS.forEach(x => { const m=getMark(x.d); if(m==="done")done++; if(m==="work")work++; });
+    document.getElementById("tally").textContent =
+      done + " strong, " + work + " needing work, " + (42-done-work) + " not yet marked.";
   }
 
-  const list=document.getElementById('results-list');
-  if(results.length===0){
-    list.innerHTML='<div class="no-results">No results yet. Kieran has not submitted any answers.</div>';
-    document.getElementById('results-title').textContent='No results yet';
-    return;
-  }
+  const list = document.getElementById("list");
+  let lastWeek = 0;
 
-  document.getElementById('results-title').textContent=`${results.length} answer${results.length!==1?'s':''} submitted`;
+  QUESTIONS.forEach(item => {
+    if(item.week !== lastWeek){
+      lastWeek = item.week;
+      const h = document.createElement("p");
+      h.className = "weekhead";
+      h.textContent = "Week " + item.week + ". " + WEEKS[item.week];
+      list.appendChild(h);
+    }
 
-  const sorted=[...results].reverse();
-  list.innerHTML='';
-  sorted.forEach(r=>{
-    const el=document.createElement('details');
-    el.innerHTML=`
-      <summary>
-        <span>Day ${r.day} — ${r.week||''}</span>
-        <span class="summary-badge ${r.strong?'strong':'weak'}">${r.strong?'STRONG ✅':'NEEDS WORK ⚠️'}</span>
-      </summary>
-      <div class="detail-body">
-        <div class="result-time" style="margin-bottom:8px">${fmt(r.time)}</div>
-        <div class="result-q">${r.question}</div>
-        <div style="font-size:11px;font-weight:600;color:#888;margin:8px 0 4px">Kieran's answer:</div>
-        <div class="result-a">${r.answer}</div>
-        <div style="font-size:11px;font-weight:600;color:#888;margin:8px 0 4px">Claude's assessment:</div>
-        <div class="result-assessment">${r.assessment}</div>
-      </div>`;
-    list.appendChild(el);
+    const d = document.createElement("details");
+    d.dataset.s = getMark(item.d);
+
+    const s = document.createElement("summary");
+    const n = document.createElement("span");
+    n.className = "dnum"; n.textContent = "Day " + item.d + ", " + dateFor(item.d);
+    const q = document.createElement("span");
+    q.className = "dq"; q.textContent = item.q;
+    s.append(n, q); d.appendChild(s);
+
+    const b = document.createElement("div"); b.className = "body";
+    const f = document.createElement("p"); f.className = "focus"; f.textContent = item.focus;
+    const ul = document.createElement("ul");
+    item.covers.forEach(c => { const li=document.createElement("li"); li.textContent=c; ul.appendChild(li); });
+    const marks = document.createElement("div"); marks.className = "marks";
+
+    [["done","Strong"],["work","Needs work"]].forEach(([val,label]) => {
+      const btn = document.createElement("button");
+      btn.textContent = label;
+      btn.setAttribute("aria-pressed", getMark(item.d) === val);
+      btn.onclick = () => {
+        const cur = getMark(item.d);
+        const next = cur === val ? "" : val;
+        setMark(item.d, next);
+        d.dataset.s = next;
+        marks.querySelectorAll("button").forEach((x,i) =>
+          x.setAttribute("aria-pressed", next === ["done","work"][i]));
+        tally();
+      };
+      marks.appendChild(btn);
+    });
+
+    b.append(f, ul, marks); d.appendChild(b);
+    list.appendChild(d);
   });
-}
 
-load();
-setInterval(load,30000);
+  tally();
+})();
 </script>
 </body>
 </html>
