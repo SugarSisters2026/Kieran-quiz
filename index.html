@@ -225,6 +225,11 @@
     updateWc();
   }
 
+  function markDone(){
+    const ticks = el("track").children;
+    if(ticks[day-1]) ticks[day-1].className = "tick now";
+  }
+
   function hideCheck(){
     el("check").classList.add("hidden");
     el("model").classList.add("hidden");
@@ -431,7 +436,30 @@
     window.location.href = "mailto:" + PAUL_EMAIL +
       "?subject=" + encodeURIComponent(subj) +
       "&body=" + encodeURIComponent(plain());
+    armed = false;
+    const it = QUESTIONS.find(x => x.d === day);
+    el("modelText").textContent = " " + it.followup.a;
+    el("probeQ").textContent = it.followup.q;
+    el("model").classList.remove("hidden");
+    el("probe").classList.remove("hidden");
     el("saved").textContent = "Sent. Now the follow-up, below.";
+    el("saved").classList.remove("hidden");
+    markDone();
+  };
+
+  el("copy").onclick = async () => {
+    set(day, el("ans").value);
+    if(echoed()){
+      el("saved").textContent = "That is copied from the answer points, not your own words. Say it yourself.";
+      el("saved").classList.remove("hidden"); return;
+    }
+    if(words() < MIN && !armed){
+      armed = true;
+      el("saved").textContent = "That is short. Say it out loud first. Press again to copy it as it is.";
+      el("saved").classList.remove("hidden"); return;
+    }
+    try { await navigator.clipboard.writeText(plain()); el("saved").textContent = "Copied. Paste it to Paul, then do the follow-up below."; }
+    catch(e){ el("saved").textContent = "Copy did not work. Select the text and copy it by hand, then do the follow-up below."; }
     armed = false;
     const it = QUESTIONS.find(x => x.d === day);
     el("modelText").textContent = " " + it.followup.a;
@@ -439,17 +467,7 @@
     el("model").classList.remove("hidden");
     el("probe").classList.remove("hidden");
     el("saved").classList.remove("hidden");
-    el("check").classList.remove("hidden");
-    render();
-    el("check").classList.remove("hidden");
-  };
-
-  el("copy").onclick = async () => {
-    set(day, el("ans").value);
-    try { await navigator.clipboard.writeText(plain()); el("saved").textContent = "Copied. Paste it to Paul on WhatsApp."; }
-    catch(e){ el("saved").textContent = "Copy did not work on this browser. Select the text and copy it by hand."; }
-    el("saved").classList.remove("hidden");
-    el("check").classList.remove("hidden");
+    markDone();
   };
 
   el("prev").onclick = () => { if(day>1){ day--; hideCheck(); render(); } };
