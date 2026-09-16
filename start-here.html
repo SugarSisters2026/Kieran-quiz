@@ -12,7 +12,7 @@
   *{box-sizing:border-box}
   body{margin:0; background:var(--ground); color:var(--ink);
     font:400 16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    padding:26px 18px 90px}
+    padding:26px 18px 150px}
   .wrap{max-width:660px; margin:0 auto}
   h1{font:600 19px/1.25 system-ui,sans-serif; margin:0 0 4px}
   .sub{color:var(--muted); font-size:13.5px; margin:0 0 22px}
@@ -38,6 +38,16 @@
   .five ol{margin:0; padding-left:22px}
   .five li{font:400 17px/1.5 Charter,Georgia,serif; margin-bottom:14px}
   .five li:last-child{margin-bottom:0}
+  .bar{position:fixed; left:0; right:0; bottom:0; background:var(--panel);
+    border-top:1px solid var(--rule); padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+    display:none; gap:8px; justify-content:center; flex-wrap:wrap; z-index:50;
+    box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+  .bar.show{display:flex}
+  .bar button{font:600 15px system-ui,sans-serif; padding:12px 16px; border-radius:3px; cursor:pointer}
+  .bar .go{background:var(--accent); color:#fff; border:1px solid var(--accent); flex:1 1 40%; max-width:260px}
+  .bar .alt{background:transparent; color:var(--accent); border:1px solid var(--accent)}
+  .bar button:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+  .pos{width:100%; text-align:center; color:var(--muted); font-size:12.5px; margin:0 0 2px}
   .foot{margin-top:28px; font-size:13px; color:var(--muted); text-align:center}
   @media (max-width:520px){ p.s{font-size:17px} .card{padding:20px 16px} }
 </style>
@@ -47,8 +57,8 @@
   <h1>Your case, in five minutes</h1>
   <p class="sub">Kieran Doyle. No case names. No paragraph numbers. Just what it is about.</p>
 
-  <button class="play" id="play">Play it to me</button>
-  <p class="hint" id="hint">Or just read it. It takes about five minutes either way.</p>
+  <button class="play" id="play">Read it to me, one bit at a time</button>
+  <p class="hint" id="hint">It stops after every paragraph. You decide when to go on.</p>
 
   <div class="card">
     <h2>What happened when you bought the house</h2>
@@ -116,54 +126,83 @@
   <p class="foot">Read it again tomorrow. It gets shorter every time.</p>
 </div>
 
+<div class="bar" id="bar">
+  <p class="pos" id="pos"></p>
+  <button class="go" id="next">Continue</button>
+  <button class="alt" id="again">Again</button>
+  <button class="alt" id="top">Back to top</button>
+</div>
+
 <script>
 (function(){
   const synth = window.speechSynthesis;
   const paras = Array.from(document.querySelectorAll("p.s"));
-  const btn = document.getElementById("play");
+  const btn  = document.getElementById("play");
   const hint = document.getElementById("hint");
-  let i = 0, playing = false;
+  const bar  = document.getElementById("bar");
+  const pos  = document.getElementById("pos");
+  const nextB = document.getElementById("next");
+  const againB = document.getElementById("again");
+  const topB = document.getElementById("top");
+  let i = 0, started = false;
 
   if(!synth){
     btn.disabled = true;
     btn.textContent = "This browser cannot read aloud";
-    hint.textContent = "Read it instead. It takes about five minutes.";
+    hint.textContent = "Read it instead. Take it one paragraph at a time.";
     return;
   }
 
   function clear(){ paras.forEach(p => p.classList.remove("on")); }
 
-  function stop(){
-    playing = false; i = 0;
+  function reset(){
+    started = false; i = 0;
     try{ synth.cancel(); }catch(e){}
     clear();
+    bar.classList.remove("show");
     btn.classList.remove("live");
-    btn.textContent = "Play it to me";
-    hint.textContent = "Or just read it. It takes about five minutes either way.";
+    btn.textContent = "Read it to me, one bit at a time";
+    hint.textContent = "It stops after every paragraph. You decide when to go on.";
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function speakNext(){
-    if(!playing || i >= paras.length){ stop(); return; }
+  function speakOne(n){
+    i = n;
     clear();
     const p = paras[i];
     p.classList.add("on");
     p.scrollIntoView({ behavior:"smooth", block:"center" });
+    pos.textContent = "Paragraph " + (i+1) + " of " + paras.length;
+    bar.classList.remove("show");
     const u = new SpeechSynthesisUtterance(p.textContent);
     u.lang = "en-IE";
     u.rate = 0.88;
-    u.onend = () => { i++; speakNext(); };
-    u.onerror = stop;
+    u.onend = stopped;
+    u.onerror = stopped;
+    try{ synth.cancel(); }catch(e){}
     synth.speak(u);
   }
 
+  function stopped(){
+    const last = i >= paras.length - 1;
+    nextB.textContent = last ? "That is the end" : "Continue";
+    nextB.disabled = last;
+    nextB.style.opacity = last ? ".45" : "1";
+    bar.classList.add("show");
+  }
+
   btn.onclick = () => {
-    if(playing){ stop(); return; }
-    playing = true;
+    if(started){ reset(); return; }
+    started = true;
     btn.classList.add("live");
-    btn.textContent = "Stop";
-    hint.textContent = "Follow the highlighted line.";
-    speakNext();
+    btn.textContent = "Stop and start over";
+    hint.textContent = "It stops after every paragraph. Use the buttons at the bottom.";
+    speakOne(0);
   };
+
+  nextB.onclick = () => { if(i < paras.length - 1) speakOne(i + 1); };
+  againB.onclick = () => speakOne(i);
+  topB.onclick = () => reset();
 })();
 </script>
 </body>
